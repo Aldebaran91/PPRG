@@ -22,20 +22,33 @@ namespace DiningPhilosophers
                 // Philosopher is thinking
                 Thread.Sleep(rm.Next() % maxThinkingTime);
                 Console.WriteLine($"\t{philosopherNumber} philosopher finished thinking");
-                lock (leftFork)
+
+                Monitor.Enter(leftFork);
+
+                Console.WriteLine($"\t\t{philosopherNumber} philosopher took first fork {leftForkNr}");
+                Monitor.Enter(rightFork);
+
+                watch.Stop();
+                WaitForFork += watch.ElapsedMilliseconds;
+                Console.WriteLine($"\t\t\t{philosopherNumber} philosopher took second fork {rightForkNr}");
+                Thread.Sleep(rm.Next() % maxEatingTime);
+                Console.WriteLine($"\t\t\t{philosopherNumber} philosopher finished eating");
+
+
+                if (rm.Next() % 2 == 0)
                 {
-                    Console.WriteLine($"\t\t{philosopherNumber} philosopher took first fork {leftForkNr}");
-                    lock (rightFork)
-                    {
-                        watch.Stop();
-                        WaitForFork += watch.ElapsedMilliseconds;
-                        Console.WriteLine($"\t\t\t{philosopherNumber} philosopher took second fork {rightForkNr}");
-                        Thread.Sleep(rm.Next() % maxEatingTime);
-                        Console.WriteLine($"\t\t\t{philosopherNumber} philosopher finished eating");
-                    }
+                    Monitor.Exit(rightFork);
                     Console.WriteLine($"\t\t{philosopherNumber} philosopher put fork {rightForkNr} back");
+                    Monitor.Exit(leftFork);
+                    Console.WriteLine($"\t{philosopherNumber} philosopher put fork {leftForkNr} back");
                 }
-                Console.WriteLine($"\t{philosopherNumber} philosopher put fork {leftForkNr} back");
+                else
+                {
+                    Monitor.Exit(rightFork);
+                    Console.WriteLine($"\t\t{philosopherNumber} philosopher put fork {rightForkNr} back");
+                    Monitor.Exit(leftFork);
+                    Console.WriteLine($"\t{philosopherNumber} philosopher put fork {leftForkNr} back");
+                }
             }
 
             Console.WriteLine($"{philosopherNumber} philosopher left task");
