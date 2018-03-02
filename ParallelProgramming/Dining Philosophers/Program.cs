@@ -89,16 +89,16 @@ namespace DiningPhilosophers
             }
 
             // Let them eat
-            Thread.Sleep(1000);
+            Thread.Sleep(10000);
+
+            Console.WriteLine("\nPress any key to exit.");
+            Console.ReadLine();
 
             // Stop eating
             source.Cancel();
 
             // Wait till all finished
             Task.WaitAll(pTasks);
-
-            Console.WriteLine("\nPress any key to exit.");
-            Console.ReadLine();
         }
     }
 }
