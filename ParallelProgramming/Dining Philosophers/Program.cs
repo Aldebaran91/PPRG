@@ -1,84 +1,88 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DiningPhilosophers
 {
-    /// <summary> 
-    /// Philoshoper class.  
-    /// Represents dinig philosophers. 
-    /// </summary> 
-    public sealed class Philoshoper
+    public class Philosopher
     {
-        /// <summary> 
-        /// That's where philosophers compete for the available utencils on their left and right in order to eat. 
-        /// </summary> 
-        /// <param name="leftChopstick">Utencil on the left of the philosopher.</param> 
-        /// <param name="rightChopstick">Utencil on the right of the philosopher.</param> 
-        /// <param name="philosopherNumber">Philosopher number for displaying on the screen.</param> 
-        /// <param name="leftChopstickNumber">Left utencil number number for displaying on the screen.</param> 
-        /// <param name="rightChopstickNumber">Right utencil number number for displaying on the screen.</param> 
-        static public void Eat(object leftChopstick, object rightChopstick, int philosopherNumber, int leftChopstickNumber, int rightChopstickNumber)
+        public static void Eat(object leftFork, object rightFork, int leftForkNr, int rightForkNr,
+            int philosopherNumber, int maxThinkingTime, int maxEatingTime, CancellationToken token)
         {
-            lock (leftChopstick)                // Grab utencil on the left 
+            Random rm = new Random();
+
+            while (!token.IsCancellationRequested)
             {
-                Console.WriteLine("   Philosopher {0} picked {1} chopstick.", philosopherNumber, leftChopstickNumber);
+                // Philosopher is thinking
+                Thread.Sleep(rm.Next() % maxThinkingTime);
+                Console.WriteLine($"{philosopherNumber} philosopher finished thinking");
 
-                lock (rightChopstick)           // Grab utencil on the right 
+                lock (leftFork)
                 {
-                    // Eat here 
-                    Console.WriteLine("   Philosopher {0} picked {1} chopstick.", philosopherNumber, rightChopstickNumber);
-                    Console.WriteLine("Philosopher {0} eats.", philosopherNumber);
-
-                    //Task.Delay(5000); 
+                    Console.WriteLine($"{philosopherNumber} philosopher took first fork {leftFork}");
+                    lock (rightFork)
+                    {
+                        Console.WriteLine($"{philosopherNumber} philosopher took second fork {rightFork}");
+                        Thread.Sleep(rm.Next() % maxEatingTime);
+                        Console.WriteLine($"{philosopherNumber} philosopher finished eating");
+                    }
                 }
-
-                Console.WriteLine("   Philosopher {0} released {1} chopstick.", philosopherNumber, rightChopstickNumber);
             }
-
-            Console.WriteLine("   Philosopher {0} released {1} chopstick.", philosopherNumber, leftChopstickNumber);
+            
+            Console.WriteLine($"{philosopherNumber} philosopher left task");
         }
     }
-
-    /// <summary> 
-    /// Main entry into the sample 
-    /// </summary> 
+    
     class Program
     {
         static void Main(string[] args)
         {
-            const int numPhilosophers = 5;
+            int n, thinkingTime, eatingTime;
+            string consoleInput;
 
-            // 5 utencils on the left and right of each philosopher. Use them to acquire locks. 
-            var chopsticks = new Dictionary<int, object>(numPhilosophers);
+            Console.Write("Enter number of philosophers: ");
+            consoleInput = Console.ReadLine();
+            n = int.Parse(consoleInput);
 
-            for (int i = 0; i < numPhilosophers; ++i)
+            Console.Write("Enter max thinking time in ms: ");
+            consoleInput = Console.ReadLine();
+            thinkingTime = int.Parse(consoleInput);
+
+            Console.Write("Enter max eating time in ms: ");
+            consoleInput = Console.ReadLine();
+            eatingTime = int.Parse(consoleInput);
+
+            CancellationTokenSource source = new CancellationTokenSource();
+
+            object[] forks = new object[n];
+            for (int i = 0; i < n; i++)
             {
-                chopsticks.Add(i, new object());
+                forks[i] = new object();
             }
 
-            // This is where we create philosophers, each of 5 tasks represents one philosopher. 
-            Task[] tasks = new Task[numPhilosophers];
+            Task[] pTasks = new Task[n];
+            pTasks[0] = new Task(() => Philosopher.Eat(forks[n - 1], forks[0],
+                    n- 1, 0, 1, thinkingTime, eatingTime, source.Token));
+            pTasks[0].Start();
 
-            tasks[0] = new Task(() => Philoshoper.Eat(chopsticks[0], chopsticks[numPhilosophers - 1], 0 + 1, 1, numPhilosophers));
-
-            for (int i = 1; i < numPhilosophers; ++i)
+            for (int i = 1; i < n; i++)
             {
-                int ix = i;
-                tasks[ix] = new Task(() => Philoshoper.Eat(chopsticks[ix - 1], chopsticks[ix], ix + 1, ix, ix + 1));
+                pTasks[i] = new Task(() => Philosopher.Eat(forks[i - 1], forks[i % n],
+                    i - 1, i, i + 1, thinkingTime, eatingTime, source.Token));
+                pTasks[i].Start();
             }
+            
+            // Let them eat
+            Thread.Sleep(1000);
 
-            // May eat! 
-            Parallel.ForEach(tasks, t =>
-            {
-                t.Start();
-            });
+            // Stop eating
+            source.Cancel();
 
-            // Wait for all philosophers to finish their dining 
-            Task.WaitAll(tasks);
+            // Wait till all finished
+            Task.WaitAll(pTasks);
 
-            Console.WriteLine("\nPress any key to exit."); 
-            Console.ReadKey(false); 
+            Console.WriteLine("\nPress any key to exit.");
+            Console.ReadLine();
         }
     }
 }
