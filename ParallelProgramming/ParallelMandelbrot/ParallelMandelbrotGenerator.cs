@@ -14,7 +14,7 @@ namespace ParallelMandelbrot
     public class ParallelMandelbrotGenerator
     {
         
-        public Image Mandelbrot(bool useParallel, int width, int height, double realMin, double imagMin, double realMax, double imagMax, int MaxIterations, ref TimeSpan calcTime)
+        public Image Mandelbrot(bool useParallel, int MaxThreads, int width, int height, double realMin, double imagMin, double realMax, double imagMax, int MaxIterations, ref TimeSpan calcTime)
         {
             
 
@@ -29,11 +29,17 @@ namespace ParallelMandelbrot
             if (useParallel)
             {
                 //parallel
-                Parallel.For(0, width * height, delegate (int i)
+
+                ParallelOptions pOptions = new ParallelOptions();
+                pOptions.MaxDegreeOfParallelism = MaxThreads;
+
+                Parallel.For(0, width * height, pOptions, delegate(int i)
                 {
                     int ix = i % width;
                     int iy = (int)(i / height);
-                    int colIndex = calcPixValue(ix, iy, realMin, imagMin, realMax, imagMax, width, height, MaxIterations);
+                    int colIndex = calcPixValue(
+                        ix, iy, realMin, imagMin, realMax, imagMax,
+                        width, height, MaxIterations);
                     ResultColors[ix, iy] = colTable.getColor(colIndex);
                 });
             }

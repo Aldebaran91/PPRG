@@ -46,6 +46,7 @@
             this.textBox_width = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.cb_parallel = new System.Windows.Forms.CheckBox();
+            this.textBox_threadCount = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).BeginInit();
             this.SuspendLayout();
             // 
@@ -196,16 +197,24 @@
             this.cb_parallel.AutoSize = true;
             this.cb_parallel.Location = new System.Drawing.Point(12, 91);
             this.cb_parallel.Name = "cb_parallel";
-            this.cb_parallel.Size = new System.Drawing.Size(81, 17);
+            this.cb_parallel.Size = new System.Drawing.Size(66, 17);
             this.cb_parallel.TabIndex = 17;
-            this.cb_parallel.Text = "Use parallel";
+            this.cb_parallel.Text = "Parallel: ";
             this.cb_parallel.UseVisualStyleBackColor = true;
+            // 
+            // textBox_threadCount
+            // 
+            this.textBox_threadCount.Location = new System.Drawing.Point(107, 91);
+            this.textBox_threadCount.Name = "textBox_threadCount";
+            this.textBox_threadCount.Size = new System.Drawing.Size(87, 20);
+            this.textBox_threadCount.TabIndex = 18;
             // 
             // Form_Mandelbrot
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(936, 439);
+            this.Controls.Add(this.textBox_threadCount);
             this.Controls.Add(this.cb_parallel);
             this.Controls.Add(this.textBox_height);
             this.Controls.Add(this.label7);
@@ -252,6 +261,7 @@
         private System.Windows.Forms.TextBox textBox_width;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox cb_parallel;
+        private System.Windows.Forms.TextBox textBox_threadCount;
     }
 }
 

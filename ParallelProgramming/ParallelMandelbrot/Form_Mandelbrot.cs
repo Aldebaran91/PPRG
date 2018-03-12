@@ -19,6 +19,8 @@ namespace ParallelMandelbrot
         {
             InitializeComponent();
 
+            this.textBox_threadCount.Text = "10";
+
             this.textBox_width.Text = "1024";
             this.textBox_height.Text = "1024";
 
@@ -32,10 +34,10 @@ namespace ParallelMandelbrot
 
         private void btn_CalcNewMandelbrot_Click(object sender, EventArgs e)
         {
-            int width = 0, height = 0;
+            int width = 0, height = 0, threadCount = 0;
             width = int.Parse(textBox_width.Text);
             height = int.Parse(textBox_height.Text);
-
+            threadCount = int.Parse(textBox_threadCount.Text);
             double realMin, imagMin, realMax, imagMax;
 
             realMin = double.Parse(textBox_realMin.Text);
@@ -46,7 +48,7 @@ namespace ParallelMandelbrot
             int iterations = int.Parse(textBox_Iterations.Text);
 
             TimeSpan calcTime = new TimeSpan();
-            Image result = mandel.Mandelbrot(cb_parallel.Checked, width, height, realMin, imagMin, realMax, imagMax, iterations, ref calcTime);
+            Image result = mandel.Mandelbrot(cb_parallel.Checked, threadCount, width, height, realMin, imagMin, realMax, imagMax, iterations, ref calcTime);
 
             label_calcTime.Text = String.Format("CalcTime: {0} ms", calcTime.TotalMilliseconds);
             this.pictureBox_Result.Image = result;
