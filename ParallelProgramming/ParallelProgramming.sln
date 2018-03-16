@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dining Philosophers", "Dini
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelMandelbrot", "ParallelMandelbrot\ParallelMandelbrot.csproj", "{C21B326E-D4E7-4326-84AA-7E364097B5E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task_Parallelism", "Task_Parallelism\Task_Parallelism.csproj", "{1D56FB5B-7931-4E0E-8DDB-298E115693DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{C21B326E-D4E7-4326-84AA-7E364097B5E5}.Release|x64.Build.0 = Release|Any CPU
 		{C21B326E-D4E7-4326-84AA-7E364097B5E5}.Release|x86.ActiveCfg = Release|Any CPU
 		{C21B326E-D4E7-4326-84AA-7E364097B5E5}.Release|x86.Build.0 = Release|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Debug|x64.Build.0 = Debug|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Debug|x86.Build.0 = Debug|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Release|x64.ActiveCfg = Release|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Release|x64.Build.0 = Release|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{1D56FB5B-7931-4E0E-8DDB-298E115693DF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
