@@ -1,4 +1,7 @@
-﻿namespace MergeSort
+﻿//#define PARALLEL
+//#define THRESHHOLD
+
+namespace MergeSort
 {
     using System;
     
@@ -84,18 +87,25 @@
                 return;
             }
 
+#if PARALLEL
+
+#elif THRESHHOLD
+
+#else
             var left = first;
             var size = ceiling(length, Merges);
             for (var remaining = length; remaining > 0; remaining -= size, left += size)
             {
                 var right = left + Math.Min(remaining, size) - 1;
+
                 Sort(entries1, entries2, left, right);
             }
+#endif
 
             Merge(entries1, entries2, first, last);
             Array.Copy(entries2, first, entries1, first, length);
         }
-        #endregion
+#endregion
         
         public void Merge(T[] entries1, T[] entries2, Int32 first, Int32 last)
         {
