@@ -1,8 +1,11 @@
-﻿namespace QuickSort
+﻿//#define PARALLEL
+//#define THRESHHOLD
+
+namespace QuickSort
 {
     using System;
-    
-    #region Insertion Sort
+    using System.Threading.Tasks;
+
     static class InsertionSort<T> where T : IComparable
     {
         public static void Sort(T[] entries, Int32 first, Int32 last)
@@ -19,38 +22,19 @@
             entries[index] = entry;
         }
     }
-    #endregion
 
     public class QuickSort<T> where T : IComparable
     {
-        #region Constants
+        private const int MinLength = 30;
         private const Int32 insertionLimitDefault = 12;
-        #endregion
-
-        #region Properties
         public Int32 InsertionLimit { get; set; }
         protected Random Random { get; set; }
-        #endregion
-
-        #region Constructors
-        public QuickSort(Int32 insertionLimit, Random random)
-        {
-            InsertionLimit = insertionLimit;
-            Random = random;
-        }
-
-        public QuickSort(Int32 insertionLimit)
-          : this(insertionLimit, new Random())
-        {
-        }
 
         public QuickSort()
-          : this(insertionLimitDefault)
         {
+            Random = new Random();
         }
-        #endregion
 
-        #region Sort Methods
         public void Sort(T[] entries)
         {
             Sort(entries, 0, entries.Length - 1);
@@ -67,6 +51,7 @@
                     return;
                 }
 
+
                 var median = pivot(entries, first, last);
 
                 var left = first;
@@ -75,16 +60,48 @@
 
                 var leftLength = right + 1 - first;
                 var rightLength = last + 1 - left;
-                
+
                 if (leftLength < rightLength)
                 {
+#if PARALLEL
+                    Task.Factory.StartNew(() =>
+                    {
+                        int newFirst = first;
+                        int newRight = right;
+                        Sort(entries, newFirst, newRight);
+                    });
+                    Task.WaitAll();
+#elif THRESHHOLD
+                    if (entries.Length < MinLength)
+                        Sort(entries, first, right);
+                    else
+                        Task.Factory.StartNew(() => Sort(entries, first, right));
+#else
                     Sort(entries, first, right);
+#endif
+
                     first = left;
                     length = rightLength;
                 }
                 else
                 {
+#if PARALLEL
+                    Task.Factory.StartNew(() => 
+                    {
+                        int newLeft = left;
+                        int newLast = last;
+                        Sort(entries, newLeft, newLast);
+                    });
+                    Task.WaitAll();
+#elif THRESHHOLD
+                    if (entries.Length < MinLength)
+                        Sort(entries, left, right);
+                    else
+                        Task.Factory.StartNew(() => Sort(entries, left, last));
+#else
                     Sort(entries, left, last);
+#endif
+
                     last = right;
                     length = leftLength;
                 }
@@ -106,6 +123,7 @@
             }
 
             InsertionSort<T>.Sort(entries, first, right);
+
             var median = entries[first + sampleSize / 2];
             return median;
         }
@@ -119,7 +137,7 @@
             {
                 while (median.CompareTo(entries[left]) > 0) left++;
                 while (median.CompareTo(entries[right]) < 0) right--;
-                
+
                 if (right <= left) break;
 
                 Swap(entries, left, right);
@@ -134,22 +152,6 @@
             }
         }
 
-        private static void swapOut(T[] entries, T median, Int32 left, Int32 right,
-                                    ref Int32 leftMedian, ref Int32 rightMedian)
-        {
-            if (median.CompareTo(entries[left]) == 0) Swap(entries, leftMedian++, left);
-            if (median.CompareTo(entries[right]) == 0) Swap(entries, right, rightMedian--);
-        }
-
-        private static void swapIn(T[] entries, ref Int32 left, ref Int32 right,
-                                   Int32 leftMedian, Int32 rightMedian, Int32 first, Int32 last)
-        {
-            for (var prefix = first; prefix < leftMedian;)
-                Swap(entries, prefix++, right--);
-            for (var suffix = last; rightMedian < suffix;)
-                Swap(entries, left++, suffix--);
-        }
-
         public static void Swap(T[] entries, Int32 index1, Int32 index2)
         {
             if (index1 != index2)
@@ -160,5 +162,4 @@
             }
         }
     }
-    #endregion
 }

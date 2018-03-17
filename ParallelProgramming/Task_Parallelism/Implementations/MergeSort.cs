@@ -96,12 +96,11 @@
             Array.Copy(entries2, first, entries1, first, length);
         }
         #endregion
-
-        #region Merge Methods
+        
         public void Merge(T[] entries1, T[] entries2, Int32 first, Int32 last)
         {
             Array.Clear(Positions, 0, Merges);
-            // This implementation has a quadratic time dependency on the number of merges
+
             for (var index = first; index <= last; index++)
                 entries2[index] = remove(entries1, first, last);
         }
@@ -128,18 +127,14 @@
                     }
                 }
             }
-
-            // Remove entry
+            
             Positions[found.Value]++;
             return entry;
         }
-        #endregion
-
-        #region Math Methods
+        
         private static Int32 ceiling(Int32 numerator, Int32 denominator)
         {
             return (numerator + denominator - 1) / denominator;
         }
-        #endregion
     }
 }
