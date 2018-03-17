@@ -1,5 +1,5 @@
 ﻿//#define PARALLEL
-//#define THRESHHOLD
+#define THRESHHOLD
 
 namespace QuickSort
 {
@@ -8,8 +8,6 @@ namespace QuickSort
 
     public class QuickSort<T> where T : IComparable
     {
-        private const int MinLength = 20;
-
         public void Sort(T[] entries)
         {
             Sort(entries, 0, entries.Length - 1);
@@ -29,9 +27,39 @@ namespace QuickSort
 
                 var leftLength = right + 1 - first;
                 var rightLength = last + 1 - left;
-                
+
+#if PARALLEL
+                Task t1 = Task.Factory.StartNew(() =>
+                {
+                    Sort(entries, first, right);
+                });
+                Task t2 = Task.Factory.StartNew(() =>
+                {
+                    Sort(entries, left, last);
+                });
+                Task.WaitAll(new Task[] { t1, t2 });
+#elif THRESHHOLD
+                if (length < entries.Length / 4)
+                {
+                    Sort(entries, first, right);
+                    Sort(entries, left, last);
+                }
+                else
+                {
+                    Task t1 = Task.Factory.StartNew(() =>
+                    {
+                        Sort(entries, first, right);
+                    });
+                    Task t2 = Task.Factory.StartNew(() =>
+                    {
+                        Sort(entries, left, last);
+                    });
+                    Task.WaitAll(new Task[] { t1, t2 });
+                }
+#else
                 Sort(entries, first, right);
                 Sort(entries, left, last);
+#endif
             }
         }
 

@@ -8,7 +8,7 @@ namespace Task_Parallelism
 {
     class Program
     {
-        const int length = 25;
+        const int length = 50;
         const int laps = 1_000;
 
         static void Main(string[] args)
