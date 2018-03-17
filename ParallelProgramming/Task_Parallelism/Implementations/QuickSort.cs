@@ -1,9 +1,10 @@
-﻿#define PARALLEL
-//#define THRESHHOLD
+﻿//#define PARALLEL
+#define THRESHHOLD
 
 namespace QuickSort
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     public class QuickSort<T> where T : IComparable
@@ -13,8 +14,6 @@ namespace QuickSort
         public void Sort(T[] entries)
         {
             Sort(entries, 0, entries.Length - 1, 0);
-
-            Task.WaitAll();
         }
 
         public void Sort(T[] entries, Int32 first, Int32 last, int recursion = 0)
@@ -22,6 +21,8 @@ namespace QuickSort
             ++recursion;
 
             var length = last + 1 - first;
+            List<Task> tList = new List<Task>();
+            
             while (length > 1)
             {
                 var median = this.GetMedian(entries, first, last);
@@ -42,7 +43,8 @@ namespace QuickSort
                         int newRight = right;
                         Sort(entries, newFirst, newRight, recursion);
                     });
-                    t.Wait();
+                    tList.Add(t);
+                    //t.Wait();
 #elif THRESHHOLD
                     if (entries.Length < MinLength)
                         Sort(entries, first, right);
@@ -54,7 +56,8 @@ namespace QuickSort
                             int newRight = right;
                             Sort(entries, newFirst, newRight, recursion);
                         });
-                        t.Wait();
+                        tList.Add(t);
+                        //t.Wait();
                     }
 #else
                     Sort(entries, first, right, recursion);
@@ -94,6 +97,8 @@ namespace QuickSort
                     length = leftLength;
                 }
             }
+
+            Task.WaitAll(tList.ToArray());
         }
 
         private T GetMedian(T[] entries, Int32 first, Int32 last)
