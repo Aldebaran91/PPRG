@@ -4,123 +4,111 @@
 namespace MergeSort
 {
     using System;
+    using System.Threading.Tasks;
+    using static Task_Parallelism.Program;
 
     public class MergeSort<T> where T : IComparable
     {
-        #region Constants
-        private const Int32 mergesDefault = 6;
-        private const Int32 insertionLimitDefault = 12;
-        #endregion
+        public Modus Mode = Modus.Sequential;
+        public int THRESHHOLD = int.MaxValue;
 
-        #region Properties
-        protected Int32[] Positions { get; set; }
-
-        private Int32 merges;
-        public Int32 Merges
-        {
-            get { return merges; }
-            set
-            {
-                // A minimum of 2 merges are required
-                if (value > 1)
-                    merges = value;
-                else
-                    throw new ArgumentOutOfRangeException();
-
-                if (Positions == null || Positions.Length != merges)
-                    Positions = new Int32[merges];
-            }
-        }
-
-        public Int32 InsertionLimit { get; set; }
-        #endregion
-
-        #region Constructors
-        public MergeSort(Int32 merges, Int32 insertionLimit)
-        {
-            Merges = merges;
-            InsertionLimit = insertionLimit;
-        }
-
-        public MergeSort()
-          : this(mergesDefault, insertionLimitDefault)
-        {
-        }
-        #endregion
-
-        #region Sort Methods
         public void Sort(T[] entries)
         {
-            // Allocate merge buffer
-            var entries2 = new T[entries.Length];
-            Sort(entries, entries2, 0, entries.Length - 1);
+            if (Mode == Modus.Threshhold && THRESHHOLD == int.MaxValue)
+                THRESHHOLD = entries.Length / 4;
+
+            Sort(entries, 0, entries.Length - 1);
         }
 
         // Top-Down K-way Merge Sort
-        public void Sort(T[] entries1, T[] entries2, Int32 first, Int32 last)
+        public void Sort(T[] entries1, long first, long last)
         {
             var length = last + 1 - first;
             if (length < 2)
                 return;
-
-#if PARALLEL
-
-#elif THRESHHOLD
-
-#else
+            
             var left = first;
-            var size = ceiling(length, Merges);
-            for (var remaining = length; remaining > 0; remaining -= size, left += size)
+            var leftLast = (first + last) / 2;
+            var right = leftLast + 1;
+            var rightLast = last;
+
+            switch (Mode)
             {
-                var right = left + Math.Min(remaining, size) - 1;
-
-                Sort(entries1, entries2, left, right);
-            }
-#endif
-
-            Merge(entries1, entries2, first, last);
-            Array.Copy(entries2, first, entries1, first, length);
-        }
-#endregion
-        
-        public void Merge(T[] entries1, T[] entries2, Int32 first, Int32 last)
-        {
-            Array.Clear(Positions, 0, Merges);
-
-            for (var index = first; index <= last; index++)
-                entries2[index] = remove(entries1, first, last);
-        }
-
-        private T remove(T[] entries, Int32 first, Int32 last)
-        {
-            var entry = default(T);
-            var found = (Int32?)null;
-            var length = last + 1 - first;
-
-            var index = 0;
-            var left = first;
-            var size = ceiling(length, Merges);
-            for (var remaining = length; remaining > 0; remaining -= size, left += size, index++)
-            {
-                var position = Positions[index];
-                if (position < Math.Min(remaining, size))
-                {
-                    var next = entries[left + position];
-                    if (!found.HasValue || entry.CompareTo(next) > 0)
+                case Modus.Parallel:
                     {
-                        found = index;
-                        entry = next;
+                        Task t1 = Task.Factory.StartNew(() =>
+                        {
+                            Sort(entries1, left, leftLast);
+                        });
+                        Task t2 = Task.Factory.StartNew(() =>
+                        {
+                            Sort(entries1, right, rightLast);
+                        });
+                        Task.WaitAll(new Task[] { t1, t2 });
+                        break;
                     }
+                case Modus.Threshhold:
+                    {
+                        if (length < THRESHHOLD)
+                        {
+                            Sort(entries1, left, leftLast);
+                            Sort(entries1, right, rightLast);
+                        }
+                        else
+                        {
+                            Task t1 = Task.Factory.StartNew(() =>
+                            {
+                                Sort(entries1, left, leftLast);
+                            });
+                            Task t2 = Task.Factory.StartNew(() =>
+                            {
+                                Sort(entries1, right, rightLast);
+                            });
+                            Task.WaitAll(new Task[] { t1, t2 });
+                        }
+                        break;
+                    }
+                case Modus.Sequential:
+                    {
+                        Sort(entries1, left, leftLast);
+                        Sort(entries1, right, rightLast);
+                        break;
+                    }
+            }
+
+            Merge(entries1, left, leftLast, right, rightLast);
+        }
+
+        public void Merge(T[] entries, long left, long leftLast, long right, long rightLast)
+        {
+            T[] newArray = new T[rightLast - left + 1];
+            long leftPoint = left, rightPoint = right, newPoint = 0;
+
+            while (leftPoint <= leftLast || rightPoint <= rightLast)
+            {
+                if (leftPoint <= leftLast && rightPoint <= rightLast)
+                {
+                    if (entries[leftPoint].CompareTo(entries[rightPoint]) < 0)
+                        newArray[newPoint++] = entries[leftPoint++];
+                    else
+                        newArray[newPoint++] = entries[rightPoint++];
+                    continue;
+                }
+                else if (leftPoint <= leftLast)
+                {
+                    newArray[newPoint++] = entries[leftPoint++];
+                    continue;
+                }
+                else
+                {
+                    newArray[newPoint++] = entries[rightPoint++];
                 }
             }
-            
-            Positions[found.Value]++;
-            return entry;
-        }
-        
-        private static Int32 ceiling(Int32 numerator, Int32 denominator)
-        {
-            return (numerator + denominator - 1) / denominator;
+
+            for (long i = left; i <= rightLast; i++)
+            {
+                entries[i] = newArray[i - left];
+            }
         }
     }
 }

@@ -19,6 +19,74 @@ namespace Task_Parallelism
         const int length = 1_000_000;
         const int loops = 5;
 
+        public static void BenchmarkQuickSortThreshhold()
+        {
+            Stopwatch quickSortTime = new Stopwatch();
+            Random rdm = new Random();
+            var quickSort = new QuickSort<byte>();
+            quickSort.Mode = Modus.Threshhold;
+            List<Tuple<int, int>> results = new List<Tuple<int, int>>();
+
+            Console.WriteLine("{0,15}{1,15}{2,15}", "Mode", "Time in ms", "Threshhold");
+            for (int x = 1; x < 25; x++)
+            {
+                for (int i = 0; i < loops; i++)
+                {
+                    quickSort.THRESHHOLD = length / x;
+                    byte[] temp = new byte[length];
+                    rdm.NextBytes(temp);
+
+                    quickSortTime.Start();
+                    quickSort.Sort(temp);
+                    quickSortTime.Stop();
+                }
+
+                results.Add(new Tuple<int, int>((int)quickSortTime.ElapsedMilliseconds, x));
+                Console.WriteLine("{0,15}{1,15}{2,15}",
+                    Modus.Threshhold,
+                    (quickSortTime.ElapsedMilliseconds).ToString("N0"),
+                    $"1/{x}");
+                quickSortTime.Reset();
+            }
+
+            var max = results.OrderBy(x => x.Item1).FirstOrDefault();
+            Console.WriteLine($"1/{max.Item2} => {max.Item1} ms");
+        }
+
+        public static void BenchmarkMergeSortThreshhold()
+        {
+            Stopwatch mergeSortTime = new Stopwatch();
+            Random rdm = new Random();
+            var mergeSort = new MergeSort<byte>();
+            mergeSort.Mode = Modus.Threshhold;
+            List<Tuple<int, int>> results = new List<Tuple<int, int>>();
+
+            Console.WriteLine("{0,15}{1,15}{2,15}", "Mode", "Time in ms", "Threshhold");
+            for (int x = 1; x < 25; x++)
+            {
+                for (int i = 0; i < loops; i++)
+                {
+                    mergeSort.THRESHHOLD = length / x;
+                    byte[] temp = new byte[length];
+                    rdm.NextBytes(temp);
+
+                    mergeSortTime.Start();
+                    mergeSort.Sort(temp);
+                    mergeSortTime.Stop();
+                }
+
+                results.Add(new Tuple<int, int>((int)mergeSortTime.ElapsedMilliseconds, x));
+                Console.WriteLine("{0,15}{1,15}{2,15}",
+                    Modus.Threshhold,
+                    (mergeSortTime.ElapsedMilliseconds).ToString("N0"),
+                    $"1/{x}");
+                mergeSortTime.Reset();
+            }
+
+            var max = results.OrderBy(x => x.Item1).FirstOrDefault();
+            Console.WriteLine($"1/{max.Item2} => {max.Item1} ms");
+        }
+
         static void Main(string[] args)
         {
             Random rdm = new Random();
@@ -28,8 +96,9 @@ namespace Task_Parallelism
 
             var firstQuickSort = (byte[])testArray.Clone();
             var quickSort = new QuickSort<byte>();
+            quickSort.Mode = Modus.Parallel;
             quickSort.Sort(firstQuickSort);
-            
+
             if (!firstQuickSort.SequenceEqual(sorted))
             {
                 throw new Exception();
@@ -37,13 +106,19 @@ namespace Task_Parallelism
 
             var firstMergeSort = (byte[])testArray.Clone();
             var mergeSort = new MergeSort<byte>();
+            mergeSort.Mode = Modus.Parallel;
             mergeSort.Sort(firstMergeSort);
 
             if (!firstMergeSort.SequenceEqual(sorted))
             {
                 throw new Exception();
             }
-            
+
+            //BenchmarkQuickSortThreshhold();
+            //BenchmarkMergeSortThreshhold();
+            //Console.ReadLine();
+            //return;
+
             //##################################
             //#####                        #####
             //##### TEST STARTS RIGHT HERE #####
@@ -65,13 +140,14 @@ namespace Task_Parallelism
             Console.WriteLine("> QuickSort");
             Console.ResetColor();
             Console.WriteLine("{0,15}{1,15}", "Mode", "Time in ms");
+            byte[] temp = new byte[length];
+
             foreach (var mode in ModesToTest)
             {
                 // Setup
                 quickSort.Mode = mode;
-                byte[] temp = new byte[length];
                 rdm.NextBytes(temp);
-                
+
                 for (int i = 0; i < loops; i++)
                 {
                     // Test
@@ -83,19 +159,33 @@ namespace Task_Parallelism
                 Console.WriteLine("{0,15}{1,15}", mode, quickSortTime.ElapsedMilliseconds.ToString("N0"));
                 quickSortTime.Reset();
             }
-
             Console.WriteLine();
 
-            //for (int i = 0; i < laps; i++)
-            //{
-            //    byte[] temp = new byte[length];
-            //    rdm.NextBytes(temp);
-            //    mergeSortTime.Start();
-            //    mergeSort.Sort(temp);
-            //    mergeSortTime.Stop();
-            //}
-            
-            Console.ReadKey(false);
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("> MergeSort");
+            Console.ResetColor();
+            Console.WriteLine("{0,15}{1,15}", "Mode", "Time in ms");
+            foreach (var mode in ModesToTest)
+            {
+                // Setup
+                mergeSort.Mode = mode;
+                rdm.NextBytes(temp);
+
+                for (int i = 0; i < loops; i++)
+                {
+                    // Test
+                    mergeSortTime.Start();
+                    mergeSort.Sort(temp);
+                    mergeSortTime.Stop();
+                }
+
+                Console.WriteLine("{0,15}{1,15}", mode, mergeSortTime.ElapsedMilliseconds.ToString("N0"));
+                mergeSortTime.Reset();
+            }
+            Console.WriteLine();
+
+
+            Console.ReadLine();
         }
     }
 }
