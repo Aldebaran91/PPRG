@@ -3,13 +3,21 @@ using QuickSort;
 using System;
 using System.Linq;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Task_Parallelism
 {
-    class Program
+    public class Program
     {
-        const int length = 50;
-        const int laps = 1_000;
+        public enum Modus
+        {
+            Parallel,
+            Threshhold,
+            Sequential
+        }
+
+        const int length = 1_000_000;
+        const int loops = 5;
 
         static void Main(string[] args)
         {
@@ -35,31 +43,58 @@ namespace Task_Parallelism
             {
                 throw new Exception();
             }
+            
+            //##################################
+            //#####                        #####
+            //##### TEST STARTS RIGHT HERE #####
+            //#####                        #####
+            //##################################   
 
             Stopwatch quickSortTime = new Stopwatch();
             Stopwatch mergeSortTime = new Stopwatch();
+            List<Modus> ModesToTest = new List<Modus>() { Modus.Parallel, Modus.Threshhold, Modus.Sequential };
 
-            for (int i = 0; i < laps; i++)
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("> Author: Philip Burggasser (SE17M003, Paul Vonbank (SE17M025)");
+            Console.ResetColor();
+            Console.WriteLine($"> Size of array {length:N0}");
+            Console.WriteLine($"> {loops}x loops per test mode");
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("> QuickSort");
+            Console.ResetColor();
+            Console.WriteLine("{0,15}{1,15}", "Mode", "Time in ms");
+            foreach (var mode in ModesToTest)
             {
+                // Setup
+                quickSort.Mode = mode;
                 byte[] temp = new byte[length];
                 rdm.NextBytes(temp);
-                quickSortTime.Start();
-                quickSort.Sort(temp);
-                quickSortTime.Stop();
+                
+                for (int i = 0; i < loops; i++)
+                {
+                    // Test
+                    quickSortTime.Start();
+                    quickSort.Sort(temp);
+                    quickSortTime.Stop();
+                }
+
+                Console.WriteLine("{0,15}{1,15}", mode, quickSortTime.ElapsedMilliseconds.ToString("N0"));
+                quickSortTime.Reset();
             }
 
-            for (int i = 0; i < laps; i++)
-            {
-                byte[] temp = new byte[length];
-                rdm.NextBytes(temp);
-                mergeSortTime.Start();
-                mergeSort.Sort(temp);
-                mergeSortTime.Stop();
-            }
+            Console.WriteLine();
 
-            Console.WriteLine($"QuickSort time= {quickSortTime.ElapsedMilliseconds:N0} ms");
-            Console.WriteLine($"MergeSort time= {mergeSortTime.ElapsedMilliseconds:N0} ms");
-
+            //for (int i = 0; i < laps; i++)
+            //{
+            //    byte[] temp = new byte[length];
+            //    rdm.NextBytes(temp);
+            //    mergeSortTime.Start();
+            //    mergeSort.Sort(temp);
+            //    mergeSortTime.Stop();
+            //}
+            
             Console.ReadKey(false);
         }
     }
