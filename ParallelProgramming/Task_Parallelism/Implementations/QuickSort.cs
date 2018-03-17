@@ -1,4 +1,4 @@
-﻿#define PARALLEL
+﻿//#define PARALLEL
 //#define THRESHHOLD
 
 namespace QuickSort
@@ -12,16 +12,14 @@ namespace QuickSort
 
         public void Sort(T[] entries)
         {
-            Sort(entries, 0, entries.Length - 1, 0);
+            Sort(entries, 0, entries.Length - 1);
         }
 
-        public void Sort(T[] entries, Int32 first, Int32 last, int recursion = 0)
+        public void Sort(T[] entries, Int32 first, Int32 last)
         {
-            ++recursion;
-
             var length = last + 1 - first;
 
-            while (length > 1)
+            if (length > 1)
             {
                 var median = GetMedian(entries, first, last);
 
@@ -31,67 +29,9 @@ namespace QuickSort
 
                 var leftLength = right + 1 - first;
                 var rightLength = last + 1 - left;
-
-                if (leftLength < rightLength)
-                {
-#if PARALLEL
-                    var t = Task.Run(() =>
-                    {
-                        int newFirst = first;
-                        int newRight = right;
-                        Sort(entries, newFirst, newRight, recursion);
-                    });
-                    t.Wait();
-#elif THRESHHOLD
-                    if (entries.Length < MinLength)
-                        Sort(entries, first, right);
-                    else
-                    {
-                        var t = Task.Run(() =>
-                        {
-                            int newFirst = first;
-                            int newRight = right;
-                            Sort(entries, newFirst, newRight, recursion);
-                        });
-                        t.Wait();
-                    }
-#else
-                    Sort(entries, first, right, recursion);
-#endif
-
-                    first = left;
-                    length = rightLength;
-                }
-                else
-                {
-#if PARALLEL
-                    var t = Task.Run(() => 
-                    {
-                        int newLeft = left;
-                        int newLast = last;
-                        Sort(entries, newLeft, newLast, recursion);
-                    });
-                    t.Wait();
-#elif THRESHHOLD
-                    if (entries.Length < MinLength)
-                        Sort(entries, left, right);
-                    else
-                    {
-                        var t = Task.Run(() =>
-                        {
-                            int newLeft = left;
-                            int newLast = last;
-                            Sort(entries, newLeft, newLast, recursion);
-                        });
-                        t.Wait();
-                    }
-#else
-                    Sort(entries, left, last, recursion);
-#endif
-
-                    last = right;
-                    length = leftLength;
-                }
+                
+                Sort(entries, first, right);
+                Sort(entries, left, last);
             }
         }
 
