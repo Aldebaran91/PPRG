@@ -9,7 +9,7 @@ namespace Task_Parallelism
     class Program
     {
         const int length = 50;
-        const int laps = 100000;
+        const int laps = 100;
 
         static void Main(string[] args)
         {
@@ -21,7 +21,7 @@ namespace Task_Parallelism
             var firstQuickSort = (byte[])testArray.Clone();
             var quickSort = new QuickSort<byte>();
             quickSort.Sort(firstQuickSort);
-
+            
             if (!firstQuickSort.SequenceEqual(sorted))
             {
                 throw new Exception();

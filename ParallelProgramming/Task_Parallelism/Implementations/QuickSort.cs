@@ -6,38 +6,15 @@ namespace QuickSort
     using System;
     using System.Threading.Tasks;
 
-    static class InsertionSort<T> where T : IComparable
-    {
-        public static void Sort(T[] entries, Int32 first, Int32 last)
-        {
-            for (var index = first + 1; index <= last; index++)
-                insert(entries, first, index);
-        }
-
-        private static void insert(T[] entries, Int32 first, Int32 index)
-        {
-            var entry = entries[index];
-            while (index > first && entries[index - 1].CompareTo(entry) > 0)
-                entries[index] = entries[--index];
-            entries[index] = entry;
-        }
-    }
-
     public class QuickSort<T> where T : IComparable
     {
-        private const int MinLength = 12;
-        private const Int32 insertionLimitDefault = 12;
-        public Int32 InsertionLimit { get; set; }
-        protected Random Random { get; set; }
-
-        public QuickSort()
-        {
-            Random = new Random();
-        }
+        private const int MinLength = 20;
 
         public void Sort(T[] entries)
         {
             Sort(entries, 0, entries.Length - 1, 0);
+
+            Task.WaitAll();
         }
 
         public void Sort(T[] entries, Int32 first, Int32 last, int recursion = 0)
@@ -47,13 +24,6 @@ namespace QuickSort
             var length = last + 1 - first;
             while (length > 1)
             {
-                if (length < InsertionLimit)
-                {
-                    InsertionSort<T>.Sort(entries, first, last);
-                    return;
-                }
-
-
                 var median = pivot(entries, first, last);
 
                 var left = first;
@@ -66,18 +36,26 @@ namespace QuickSort
                 if (leftLength < rightLength)
                 {
 #if PARALLEL
-                    Task.Factory.StartNew(() =>
+                    var t = Task.Run(() =>
                     {
                         int newFirst = first;
                         int newRight = right;
-                        Sort(entries, newFirst, newRight);
+                        Sort(entries, newFirst, newRight, recursion);
                     });
-                    Task.WaitAll();
+                    t.Wait();
 #elif THRESHHOLD
                     if (entries.Length < MinLength)
                         Sort(entries, first, right);
                     else
-                        Task.Factory.StartNew(() => Sort(entries, first, right));
+                    {
+                        var t = Task.Run(() =>
+                        {
+                            int newFirst = first;
+                            int newRight = right;
+                            Sort(entries, newFirst, newRight, recursion);
+                        });
+                        t.Wait();
+                    }
 #else
                     Sort(entries, first, right, recursion);
 #endif
@@ -88,18 +66,26 @@ namespace QuickSort
                 else
                 {
 #if PARALLEL
-                    Task.Factory.StartNew(() => 
+                    var t = Task.Run(() => 
                     {
                         int newLeft = left;
                         int newLast = last;
-                        Sort(entries, newLeft, newLast);
+                        Sort(entries, newLeft, newLast, recursion);
                     });
-                    Task.WaitAll();
+                    t.Wait();
 #elif THRESHHOLD
                     if (entries.Length < MinLength)
                         Sort(entries, left, right);
                     else
-                        Task.Factory.StartNew(() => Sort(entries, left, last));
+                    {
+                        var t = Task.Run(() =>
+                        {
+                            int newLeft = left;
+                            int newLast = last;
+                            Sort(entries, newLeft, newLast, recursion);
+                        });
+                        t.Wait();
+                    }
 #else
                     Sort(entries, left, last, recursion);
 #endif
