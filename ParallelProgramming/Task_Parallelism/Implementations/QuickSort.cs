@@ -1,4 +1,4 @@
-﻿//#define PARALLEL
+﻿#define PARALLEL
 //#define THRESHHOLD
 
 namespace QuickSort
@@ -24,7 +24,7 @@ namespace QuickSort
             var length = last + 1 - first;
             while (length > 1)
             {
-                var median = pivot(entries, first, last);
+                var median = this.GetMedian(entries, first, last);
 
                 var left = first;
                 var right = last;
@@ -96,10 +96,9 @@ namespace QuickSort
             }
         }
 
-        private T pivot(T[] entries, Int32 first, Int32 last)
+        private T GetMedian(T[] entries, Int32 first, Int32 last)
         {
-            var median = entries[(first + last) / 2];
-            return median;
+            return entries[(first + last) / 2];
         }
 
         private static void partition(T[] entries, T median, ref Int32 left, ref Int32 right)
