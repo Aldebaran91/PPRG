@@ -4,25 +4,6 @@
 namespace MergeSort
 {
     using System;
-    
-    #region Insertion Sort
-    static class InsertionSort<T> where T : IComparable
-    {
-        public static void Sort(T[] entries, Int32 first, Int32 last)
-        {
-            for (var index = first + 1; index <= last; index++)
-                insert(entries, first, index);
-        }
-
-        private static void insert(T[] entries, Int32 first, Int32 index)
-        {
-            var entry = entries[index];
-            while (index > first && entries[index - 1].CompareTo(entry) > 0)
-                entries[index] = entries[--index];
-            entries[index] = entry;
-        }
-    }
-    #endregion
 
     public class MergeSort<T> where T : IComparable
     {
@@ -81,11 +62,6 @@ namespace MergeSort
             var length = last + 1 - first;
             if (length < 2)
                 return;
-            else if (length < InsertionLimit)
-            {
-                InsertionSort<T>.Sort(entries1, first, last);
-                return;
-            }
 
 #if PARALLEL
 
