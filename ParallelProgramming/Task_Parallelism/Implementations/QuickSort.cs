@@ -25,7 +25,7 @@ namespace QuickSort
 
     public class QuickSort<T> where T : IComparable
     {
-        private const int MinLength = 30;
+        private const int MinLength = 12;
         private const Int32 insertionLimitDefault = 12;
         public Int32 InsertionLimit { get; set; }
         protected Random Random { get; set; }
@@ -37,11 +37,13 @@ namespace QuickSort
 
         public void Sort(T[] entries)
         {
-            Sort(entries, 0, entries.Length - 1);
+            Sort(entries, 0, entries.Length - 1, 0);
         }
 
-        public void Sort(T[] entries, Int32 first, Int32 last)
+        public void Sort(T[] entries, Int32 first, Int32 last, int recursion = 0)
         {
+            ++recursion;
+
             var length = last + 1 - first;
             while (length > 1)
             {
@@ -77,7 +79,7 @@ namespace QuickSort
                     else
                         Task.Factory.StartNew(() => Sort(entries, first, right));
 #else
-                    Sort(entries, first, right);
+                    Sort(entries, first, right, recursion);
 #endif
 
                     first = left;
@@ -99,7 +101,7 @@ namespace QuickSort
                     else
                         Task.Factory.StartNew(() => Sort(entries, left, last));
 #else
-                    Sort(entries, left, last);
+                    Sort(entries, left, last, recursion);
 #endif
 
                     last = right;
@@ -110,21 +112,7 @@ namespace QuickSort
 
         private T pivot(T[] entries, Int32 first, Int32 last)
         {
-            var length = last + 1 - first;
-            var logLen = (Int32)Math.Log10(length);
-            var pivotSamples = 2 * logLen + 1;
-            var sampleSize = Math.Min(pivotSamples, length);
-            var right = first + sampleSize - 1;
-
-            for (var left = first; left <= right; left++)
-            {
-                var random = Random.Next(left, last + 1);
-                Swap(entries, left, random);
-            }
-
-            InsertionSort<T>.Sort(entries, first, right);
-
-            var median = entries[first + sampleSize / 2];
+            var median = entries[(first + last) / 2];
             return median;
         }
 

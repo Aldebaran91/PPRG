@@ -8,17 +8,14 @@ namespace Task_Parallelism
 {
     class Program
     {
-        const int lenght = 5;
-        const int laps = 100;
+        const int length = 50;
+        const int laps = 100000;
 
         static void Main(string[] args)
         {
-            byte[] testArray = new byte[]
-                { 2, 5, 0, 7, 0};
-            //byte[] testArray = new byte[]
-            //    { 228, 199, 20, 30, 113, 15, 125, 5, 242, 112, 55, 213, 92, 136, 167 };
             Random rdm = new Random();
-            //rdm.NextBytes(testArray);
+            byte[] testArray = new byte[]
+                { 228, 199, 20, 30, 113, 15, 125, 5, 242, 112, 55, 213, 92, 136, 167 };
             var sorted = testArray.OrderBy(x => x).ToArray();
 
             var firstQuickSort = (byte[])testArray.Clone();
@@ -44,7 +41,7 @@ namespace Task_Parallelism
 
             for (int i = 0; i < laps; i++)
             {
-                byte[] temp = new byte[lenght];
+                byte[] temp = new byte[length];
                 rdm.NextBytes(temp);
                 quickSortTime.Start();
                 quickSort.Sort(temp);
@@ -53,7 +50,7 @@ namespace Task_Parallelism
 
             for (int i = 0; i < laps; i++)
             {
-                byte[] temp = new byte[lenght];
+                byte[] temp = new byte[length];
                 rdm.NextBytes(temp);
                 mergeSortTime.Start();
                 mergeSort.Sort(temp);
