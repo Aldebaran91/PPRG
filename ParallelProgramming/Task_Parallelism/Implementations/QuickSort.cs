@@ -1,10 +1,9 @@
-﻿//#define PARALLEL
-#define THRESHHOLD
+﻿#define PARALLEL
+//#define THRESHHOLD
 
 namespace QuickSort
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     public class QuickSort<T> where T : IComparable
@@ -21,11 +20,10 @@ namespace QuickSort
             ++recursion;
 
             var length = last + 1 - first;
-            List<Task> tList = new List<Task>();
-            
+
             while (length > 1)
             {
-                var median = this.GetMedian(entries, first, last);
+                var median = GetMedian(entries, first, last);
 
                 var left = first;
                 var right = last;
@@ -43,8 +41,7 @@ namespace QuickSort
                         int newRight = right;
                         Sort(entries, newFirst, newRight, recursion);
                     });
-                    tList.Add(t);
-                    //t.Wait();
+                    t.Wait();
 #elif THRESHHOLD
                     if (entries.Length < MinLength)
                         Sort(entries, first, right);
@@ -56,8 +53,7 @@ namespace QuickSort
                             int newRight = right;
                             Sort(entries, newFirst, newRight, recursion);
                         });
-                        tList.Add(t);
-                        //t.Wait();
+                        t.Wait();
                     }
 #else
                     Sort(entries, first, right, recursion);
@@ -97,8 +93,6 @@ namespace QuickSort
                     length = leftLength;
                 }
             }
-
-            Task.WaitAll(tList.ToArray());
         }
 
         private T GetMedian(T[] entries, Int32 first, Int32 last)
@@ -106,7 +100,7 @@ namespace QuickSort
             return entries[(first + last) / 2];
         }
 
-        private static void partition(T[] entries, T median, ref Int32 left, ref Int32 right)
+        private void partition(T[] entries, T median, ref Int32 left, ref Int32 right)
         {
             var first = left;
             var last = right;
@@ -130,7 +124,7 @@ namespace QuickSort
             }
         }
 
-        public static void Swap(T[] entries, Int32 index1, Int32 index2)
+        public void Swap(T[] entries, Int32 index1, Int32 index2)
         {
             if (index1 != index2)
             {
