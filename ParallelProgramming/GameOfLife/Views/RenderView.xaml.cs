@@ -1,5 +1,4 @@
-﻿using GameOfLife.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,17 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GameOfLife
+namespace GameOfLife.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for RenderView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class RenderView : UserControl
     {
-        public MainWindow()
+        public RenderView()
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
         }
     }
 }

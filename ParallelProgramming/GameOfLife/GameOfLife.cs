@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace GameOfLife
 {
-    class GameOfLife
+    class GameOfLifeCore
     {
         public bool[,] CurrentState { get; set; }
 
-        public GameOfLife(int SizeX, int SizeY, int Iterations)
+        public GameOfLifeCore(int SizeX, int SizeY, int Iterations)
         {
 
         }
 
-        public GameOfLife(bool[,] InitialField, int Iterations)
+        public GameOfLifeCore(bool[,] InitialField, int Iterations)
         {
 
         }
