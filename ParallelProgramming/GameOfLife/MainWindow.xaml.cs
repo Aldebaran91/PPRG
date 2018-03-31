@@ -24,7 +24,7 @@ namespace GameOfLife
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
+            this.DataContext = MainViewModel.GetInstance;
         }
     }
 }

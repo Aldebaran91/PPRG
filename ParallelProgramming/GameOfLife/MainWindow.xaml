@@ -6,15 +6,15 @@
         xmlns:local="clr-namespace:GameOfLife"
         xmlns:views="clr-namespace:GameOfLife.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="750" Width="1150">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="AUTO" />
         </Grid.RowDefinitions>
         
-        <views:RenderView Grid.Row="0" />
-        <Grid Grid.Row="1">
+        <views:RenderView Grid.Row="0" Background="White" />
+        <Grid Grid.Row="1" Background="Gray">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="AUTO" />
                 <ColumnDefinition Width="*" />

@@ -5,11 +5,58 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameOfLife.Views"
              mc:Ignorable="d" 
-             Background="Yellow"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="130" d:DesignWidth="620">
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="MinWidth" Value="60" />
+            <Setter Property="IsEnabled" Value="True" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Running}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </UserControl.Resources>
     <Grid>
-        <GroupBox Header="Settings" Padding="10">
-            <TextBox>sdlfj</TextBox>
+        <GroupBox Header="Settings" Padding="10" Margin="10" Foreground="White"
+                  BorderBrush="Black" BorderThickness="1">
+            <Grid Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*" MinWidth="150" />
+                    <ColumnDefinition Width="50*" MinWidth="150" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Column="0" Grid.Row="0" Content="Breite" />
+                <Label Grid.Column="0" Grid.Row="1" Content="Höhe" />
+
+                <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Width}" />
+                <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Height}" />
+
+                <Button Grid.Column="1" Grid.Row="2" Command="{Binding ButtonCommand}"
+                        MaxHeight="40" Margin="5">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Content" Value="Start"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Running}" Value="True">
+                                    <Setter Property="Content" Value="Stop" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
         </GroupBox>
     </Grid>
 </UserControl>

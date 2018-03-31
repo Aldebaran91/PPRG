@@ -4,10 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameOfLife.Views"
-             mc:Ignorable="d" 
-             Background="Black"
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d"
+             d:DesignHeight="150" d:DesignWidth="150">
     <Grid>
-            
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="AUTO" />
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Column="1" 
+               Margin="20"
+               FontSize="25"
+               Foreground="White"
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center">
+            <Label.Content>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="FPS: " />
+                    <TextBlock Text="{Binding FPS, StringFormat={}{0:N0}}" />
+                </StackPanel>
+            </Label.Content>
+        </Label>
     </Grid>
 </UserControl>

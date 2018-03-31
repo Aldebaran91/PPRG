@@ -54,7 +54,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="GameOfLife.cs" />
-    <Compile Include="Models\BlackWhitePicture.cs" />
+    <Compile Include="Helper\ViewHelper.cs" />
+    <Compile Include="Models\BWPicture.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\RenderInfosView.xaml.cs">
       <DependentUpon>RenderInfosView.xaml</DependentUpon>
