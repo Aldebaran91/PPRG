@@ -42,31 +42,49 @@ namespace GameOfLife.Models
         
         #region Set position x/y
         
-        public void SetDeadPixel(int x, int y)
+        public void SetPixel(int x, int y, bool alive)
         {
-            pixels[width * y + x] = deadPixel;
+            pixels[width * y + x] = alive?alivePixel:deadPixel;
         }
 
-        public void SetAlivePixel(int x, int y)
+        public int getAliveNeighbours(int x, int y)
         {
-            pixels[width * y + x] = alivePixel;
+            int count = 0;
+
+            for (int xi = -1; xi <= 1; xi++)
+            {
+                for (int yi = -1; yi <= 1; yi++)
+                {
+                    if (xi == 0 && yi == 0)
+                        continue;
+
+                    if (pixels[(width * ((y + yi + height) % height)) + ((x + xi + width) % width)] == alivePixel)
+                        count++;
+                }
+            }
+            return count;
+        }
+
+        public bool isAlive(int x, int y)
+        {
+            return pixels[width * y + x] == alivePixel;
         }
 
         #endregion Set position x/y
 
-        #region Set position px
+        //#region Set position px
         
-        public void SetDeadPixel(int px)
-        {
-            pixels[px] = deadPixel;
-        }
+        //public void SetDeadPixel(int px)
+        //{
+        //    pixels[px] = deadPixel;
+        //}
 
-        public void SetAlivePixel(int px)
-        {
-            pixels[px] = alivePixel;
-        }
+        //public void SetAlivePixel(int px)
+        //{
+        //    pixels[px] = alivePixel;
+        //}
 
-        #endregion Set position px
+        //#endregion Set position px
 
         #endregion Public methods
     }

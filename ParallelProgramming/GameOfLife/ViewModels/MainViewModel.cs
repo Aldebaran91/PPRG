@@ -31,6 +31,7 @@ namespace GameOfLife.ViewModels
         private int width, height, picsRendered;
         private ICommand buttonCommand;
         private BWPicture bwPicture;
+        private GameOfLifeCore GoLInstance;
         private DateTime lastDate = DateTime.Now;
         private CancellationTokenSource cts = new CancellationTokenSource();
         private Task updateFPS, demo;
@@ -111,7 +112,8 @@ namespace GameOfLife.ViewModels
             {
                 var pic = new BWPicture(Width, Height);
                 pic.GenerateRandomPicture();
-                Picture = pic;
+                GoLInstance = new GameOfLifeCore(pic);
+                Picture = GoLInstance.CurrentState;
 
                 updateFPS = Task.Run(() =>
                 {
@@ -127,8 +129,10 @@ namespace GameOfLife.ViewModels
                     Random rdm = new Random();
                     while (!cts.IsCancellationRequested)
                     {
-                        picsRendered += rdm.Next() % 10;
-                        Thread.Sleep(TimeSpan.FromMilliseconds(100));
+                        //picsRendered += rdm.Next() % 10;
+                        Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+                        GoLInstance.Step();
+                        Picture = GoLInstance.CurrentState;
                     }
                 }, cts.Token);
 
