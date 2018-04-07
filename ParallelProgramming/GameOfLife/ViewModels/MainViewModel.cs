@@ -1,6 +1,7 @@
 ﻿using GameOfLife.Helper;
 using GameOfLife.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,19 +23,22 @@ namespace GameOfLife.ViewModels
 
         public MainViewModel()
         {
-            Width = Height = 200;
+            Height = 200;
+            Width = 200;
+            CurrentMode = Modes[0];
         }
 
         #region Fields
 
         private bool running;
-        private int width, height, picsRendered;
+        private int width, height, picsRendered, generation;
         private ICommand buttonCommand;
         private BWPicture bwPicture;
         private GameOfLifeCore GoLInstance;
         private DateTime lastDate = DateTime.Now;
         private CancellationTokenSource cts = new CancellationTokenSource();
         private Task updateFPS, demo;
+        private string currentMode;
 
         #endregion
 
@@ -90,6 +94,27 @@ namespace GameOfLife.ViewModels
             }
         }
 
+        public string CurrentMode
+        {
+            get
+            {
+                return currentMode;
+            }
+            set
+            {
+                if (currentMode != value)
+                {
+                    currentMode = value;
+                    NotifyPropertyChanged(nameof(CurrentMode));
+                }
+            }
+        }
+
+        public List<string> Modes { get; set; } = new List<string>()
+        {
+            "Zufällig", "Diamant"
+        };
+
         #endregion
 
         #region Methods
@@ -111,9 +136,28 @@ namespace GameOfLife.ViewModels
             else
             {
                 var pic = new BWPicture(Width, Height);
-                pic.GenerateRandomPicture();
+                Generation = 0;
+
+                switch (CurrentMode)
+                {
+                    case "Zufällig":
+                        {
+                            pic.GenerateRandomPicture();
+                            break;
+                        }
+                    case "Diamant":
+                        {
+                            pic.GenerateDiamantPicture();
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+
                 GoLInstance = new GameOfLifeCore(pic);
-                Picture = GoLInstance.CurrentState;
+                Picture = GoLInstance.CurrentGeneration;
 
                 updateFPS = Task.Run(() =>
                 {
@@ -126,14 +170,21 @@ namespace GameOfLife.ViewModels
 
                 demo = Task.Run(() =>
                 {
-                    Random rdm = new Random();
-                    while (!cts.IsCancellationRequested)
+                    bool first = true;
+                    do
                     {
-                        //picsRendered += rdm.Next() % 10;
-                        Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-                        GoLInstance.Step();
-                        Picture = GoLInstance.CurrentState;
+                        if (first)
+                        {
+                            GoLInstance.BeginnGeneration();
+                            first = false;
+                        }
+                        else
+                            GoLInstance.UpdateGeneration();
+                        Picture = GoLInstance.CurrentGeneration;
+                        //Thread.Sleep(TimeSpan.FromMilliseconds(10));
                     }
+                    while (!cts.IsCancellationRequested);
+
                 }, cts.Token);
 
                 Running = true;
@@ -151,6 +202,7 @@ namespace GameOfLife.ViewModels
                 bwPicture = value;
                 NotifyPropertyChanged(nameof(Picture));
                 picsRendered++;
+                Generation++;
             }
         }
 
@@ -166,6 +218,19 @@ namespace GameOfLife.ViewModels
                 {
                     picsRendered = 0;
                 }
+            }
+        }
+
+        public int Generation
+        {
+            get
+            {
+                return generation;
+            }
+            set
+            {
+                generation = value;
+                NotifyPropertyChanged(nameof(Generation));
             }
         }
 

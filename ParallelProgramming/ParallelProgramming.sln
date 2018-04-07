@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task_Parallelism", "Task_Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife", "GameOfLife\GameOfLife.csproj", "{107425BC-D7FE-4672-837A-A83BDA2B00E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLifeConsole", "GameOfLifeConsole\GameOfLifeConsole.csproj", "{C08D1298-59AE-4FFE-8D87-66C10684057B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{107425BC-D7FE-4672-837A-A83BDA2B00E5}.Release|x64.Build.0 = Release|Any CPU
 		{107425BC-D7FE-4672-837A-A83BDA2B00E5}.Release|x86.ActiveCfg = Release|Any CPU
 		{107425BC-D7FE-4672-837A-A83BDA2B00E5}.Release|x86.Build.0 = Release|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Debug|x64.Build.0 = Debug|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Debug|x86.Build.0 = Debug|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Release|x64.ActiveCfg = Release|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Release|x64.Build.0 = Release|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Release|x86.ActiveCfg = Release|Any CPU
+		{C08D1298-59AE-4FFE-8D87-66C10684057B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

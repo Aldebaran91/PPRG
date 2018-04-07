@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameOfLife.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,73 +9,53 @@ namespace GameOfLife
 {
     class GameOfLifeCore
     {
-        public GameOfLife.Models.BWPicture CurrentState { get; set; }
-        private GameOfLife.Models.BWPicture FutureState { get; set; }
+        public BWPicture CurrentGeneration { get; set; }
+        private BWPicture NextGeneration { get; set; }
 
-        public GameOfLifeCore(GameOfLife.Models.BWPicture InitialField)
+        public GameOfLifeCore(BWPicture InitialField)
         {
-            CurrentState = InitialField;
-            FutureState = new Models.BWPicture(InitialField.Width, InitialField.Height);
+            CurrentGeneration = InitialField;
+            NextGeneration = new BWPicture(InitialField.Width, InitialField.Height);
         }
 
         private void FlipStates()
         {
-            GameOfLife.Models.BWPicture temp = CurrentState;
-            CurrentState = FutureState;
-            FutureState = temp;
+            BWPicture temp = CurrentGeneration;
+            CurrentGeneration = NextGeneration;
+            NextGeneration = temp;
+        }
+
+        public void BeginnGeneration()
+        {
+            Step();
+        }
+
+        public void UpdateGeneration()
+        {
+            FlipStates();
+            Step();
         }
 
         public void Step()
         {
             ParallelOptions pOptions = new ParallelOptions();
+            pOptions.MaxDegreeOfParallelism = 4;
 
-            //Parallel.For(0, CurrentState.Width - 1, pOptions, delegate(int x)
-            //{
-            //    for (int y = 0; y < CurrentState.Height; y++)
-            //    {
-            //        int AliveNeighbors = CurrentState.getAliveNeighbours(x,y);
-
-            //        if (CurrentState.isAlive(x, y))
-            //        {
-            //            if (AliveNeighbors < 2)
-            //                FutureState.SetPixel(x, y, false);
-            //            else if (AliveNeighbors > 3)
-            //                FutureState.SetPixel(x, y, false);
-            //            else
-            //                FutureState.SetPixel(x, y, true);
-            //        }
-            //        else
-            //        {
-            //            if (AliveNeighbors == 3)
-            //                FutureState.SetPixel(x, y, true);
-            //        }
-            //    }
-            //});
-
-            for (int x = 0; x < CurrentState.Width; x++)
+            Parallel.For(0, CurrentGeneration.Height, pOptions, y =>
             {
-                for (int y = 0; y < CurrentState.Height; y++)
+                for (int x = 0; x < CurrentGeneration.Width; x++)
                 {
-                    int AliveNeighbors = CurrentState.getAliveNeighbours(x, y);
+                    int AliveNeighbors = CurrentGeneration.GetAliveNeighbours(x, y);
+                    bool isAlive = CurrentGeneration.IsAlive(x, y);
 
-                    if (CurrentState.isAlive(x, y))
-                    {
-                        if (AliveNeighbors < 2)
-                            FutureState.SetPixel(x, y, false);
-                        else if (AliveNeighbors > 3)
-                            FutureState.SetPixel(x, y, false);
-                        else
-                            FutureState.SetPixel(x, y, true);
-                    }
+                    if (isAlive && (AliveNeighbors == 2 || AliveNeighbors == 3))
+                        NextGeneration.SetPixel(x, y, true);
+                    else if (!isAlive && AliveNeighbors == 3)
+                        NextGeneration.SetPixel(x, y, true);
                     else
-                    {
-                        if (AliveNeighbors == 3)
-                            FutureState.SetPixel(x, y, true);
-                    }
+                        NextGeneration.SetPixel(x, y, false);
                 }
-            }
-                this.FlipStates();
-
+            });
         }
     }
 }
