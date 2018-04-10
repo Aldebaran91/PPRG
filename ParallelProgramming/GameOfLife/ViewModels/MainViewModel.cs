@@ -3,6 +3,7 @@ using GameOfLife.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -32,7 +33,7 @@ namespace GameOfLife.ViewModels
 
         private bool running;
         private int width, height, picsRendered, generation;
-        private ICommand buttonCommand;
+        private ICommand buttonCommand, buttonComment_benchmark;
         private BWPicture bwPicture;
         private GameOfLifeCore GoLInstance;
         private DateTime lastDate = DateTime.Now;
@@ -45,6 +46,9 @@ namespace GameOfLife.ViewModels
         #region Properties
 
         public ICommand ButtonCommand => buttonCommand ?? (buttonCommand = new CommandHandler(() => StartStopButton()));
+        public ICommand ButtonCommand_Benchmark => buttonComment_benchmark ?? (buttonComment_benchmark = new CommandHandler(() => Benchmark()));
+
+        
 
         public int Width
         {
@@ -119,6 +123,39 @@ namespace GameOfLife.ViewModels
 
         #region Methods
 
+        private void Benchmark()
+        {
+            Running = true;
+
+            var pic = new BWPicture(Width, Height);
+            Generation = 0;
+
+            switch (CurrentMode)
+            {
+                case "Zufällig":
+                    {
+                        pic.GenerateRandomPicture();
+                        break;
+                    }
+                case "Diamant":
+                    {
+                        pic.GenerateDiamantPicture();
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+
+            GoLInstance = new GameOfLifeCore(pic);
+
+            string report = GoLInstance.Benchmark();
+            System.Windows.MessageBox.Show(report, "Benchmark Result", System.Windows.MessageBoxButton.OK);
+
+            Running = false;
+        }
+
         public void StartStopButton()
         {
             if (Running)
@@ -157,6 +194,7 @@ namespace GameOfLife.ViewModels
                 }
 
                 GoLInstance = new GameOfLifeCore(pic);
+
                 Picture = GoLInstance.CurrentGeneration;
 
                 updateFPS = Task.Run(() =>
